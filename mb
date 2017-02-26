@@ -1,0 +1,24 @@
+#!/usr/bin/env python
+
+import os
+import sys
+import argparse
+
+parser = argparse.ArgumentParser(description='make bash utility')
+parser.add_argument('name', help='name of bash script')
+
+args = parser.parse_args() 
+name = args.name
+
+# make file
+if (os.path.exists(name)):
+    print('File exists')
+    sys.exit()
+else:
+    os.system('touch %s' % (name))
+
+# set executable
+os.system('chmod 700 %s' % (name))
+
+# add shebang
+os.system('echo -e "#!/usr/bin/env bash" >> %s' % (name))

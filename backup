@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# backup music
+echo Music 
+rsync --ignore-existing --size-only --progress --chmod=D750,F640 --perms --rsh=ssh -rz /mnt/Storage/Music/Music/* sam@helium:~/Music
+
+# backup code
+#echo Code
+printf "\nCode\n"
+rsync -avz -e ssh ~/Code/ sam@helium:~/Code
+
+# backup garmin
+printf "\ngarmin\n"
+rsync -avz -e ssh ~/garmin/ sam@helium:~/garmin
+
+# backup hydrogen school
+printf "\nSchool\n"
+rsync -avz -e ssh ~/School/ sam@helium:~/School
+
+# backup hydrogen documents
+printf "\nDocuments\n"
+rsync -avz -e ssh ~/Documents/ sam@helium:~/Documents
+
+# backup pictures on storage
+printf "\nPictures\n"
+rsync -rvz --ignore-existing --size-only --progress --chmod=D750,F640 -e ssh /mnt/Storage/Pictures/ sam@helium:~/Pictures
+
+# backup pythonscripts
+rsync -avz -e ssh ~/.pythonscripts/ sam@helium:~/.pythonscripts
+
+# create backup log
+printf "\nCreating log on helium\n"
+ssh sam@helium "echo $(date) >> .backuplog"

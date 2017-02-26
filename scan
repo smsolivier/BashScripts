@@ -1,0 +1,41 @@
+#!/bin/env python
+
+import os
+import sys
+import argparse
+
+parser = argparse.ArgumentParser(description='scan to one pdf')
+parser.add_argument('name', default='merged', nargs='?',type=str, help='Name of output PDF file')
+
+args = parser.parse_args()
+
+name = args.name
+
+x = ''
+
+count = 0
+
+scanstr = 'scanimage --resolution 200 --mode color --brightness 80 > %s.pnm'
+
+while (x == ''):
+    print('scanning image ' + str(count))
+    y = os.system(scanstr % (str(count)))
+    if (y != 0):
+        sys.exit()
+    x = input('Continue? ')
+    count += 1
+
+print('converting to pdf')
+for i in range(count):
+    os.system('pnmtops %s.pnm > %s.ps' % (i, i))
+    os.system('rm %s.pnm' % (i))
+    os.system('ps2pdf %s.ps %s.pdf' % (i, i))
+    os.system('rm %s.ps' % (i))
+
+print('combining into one pdf')
+os.system('pdfunite {0..%s}.pdf %s.pdf' % (count-1, name))
+
+print('removing old pdfs')
+os.system('rm {0..%s}.pdf' % (count-1))
+
+print('done')
