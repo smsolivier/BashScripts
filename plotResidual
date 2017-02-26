@@ -36,7 +36,8 @@ try:
 				for i in range(len(line)):
 					string = 'Solving for '
 					if (line[i:i+len(string)] == string):
-						var.append(line[i+len(string):].split(',')[0])
+						if (line[i+len(string):].split(',')[0] not in var):
+							var.append(line[i+len(string):].split(',')[0])
 				line = next(f)
 			break 
 	f.close()
@@ -58,6 +59,7 @@ try:
 						string = 'Final residual = ' 
 						if (line[j:j+len(string)] == string):
 							val.append(line[j+len(string):].split(',')[0])
+					
 				if (line == 'End\n'):
 					run = 0
 
