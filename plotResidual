@@ -50,7 +50,7 @@ try:
 	while(run == 1):
 
 		for i in range(len(var)):
-			plt.subplot(num/2, 2, i+1)
+			plt.subplot(int(np.ceil(num/2)), 2, i+1)
 			val = [] # store values 
 			f = skipHeader(fname)
 			for line in f:

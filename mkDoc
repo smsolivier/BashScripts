@@ -1,0 +1,83 @@
+#!/usr/bin/env python3
+
+''' extract docstrings and make a README markdon ''' 
+
+import os 
+import sys 
+
+import re 
+
+def numLines(f):
+
+	file = open(f, 'r')
+	x = 0 
+	for line in file:
+
+		x += 1 
+
+	file.close()
+
+	return x 
+
+files = os.listdir('.') # get current directory files 
+
+pyf = [] # store python file names 
+
+for i in range(len(files)):
+
+	if files[i].endswith('.py'):
+
+		pyf.append(files[i])
+
+# pyf = sorted(pyf, key=lambda v: v.upper()) # ignore case 
+pyf = sorted(pyf, key=lambda f: numLines(f), reverse=True) # sort by length of file 
+
+print(pyf)
+
+docs = [] # store doc strings 
+
+out = open('README.md', 'w')
+
+comment = '\'\'\''
+
+# get doc string 
+for i in range(len(pyf)):
+
+	f = open(pyf[i], 'r')
+
+	string = '' # store doc string 
+
+	for line in f: 
+
+		if line.startswith(comment) and line.strip().endswith(comment):
+
+			string = line.strip().strip(comment)[1:]
+
+		elif line.startswith(comment) and not(line.strip().endswith(comment)):
+
+			string = line + '\n'
+
+			line = next(f)
+
+			while comment not in line:
+
+				string += line.strip('\t') + '\n'
+
+				line = next(f)
+
+			string = string[4:].strip()
+
+	# string = string.strip()[4:-4] 
+	print(pyf[i])
+	print(string)
+
+	f.close()
+
+	out.write('### ' + pyf[i] + '\n' + string + '\n')
+
+out.close()
+
+
+
+
+			
