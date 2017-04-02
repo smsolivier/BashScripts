@@ -7,6 +7,13 @@ import sys
 
 import re 
 
+if (len(sys.argv) == 3):
+	name = sys.argv[1] 
+	desc = sys.argv[2] 
+else:
+	name = '' 
+	desc = '' 
+
 def numLines(f):
 
 	file = open(f, 'r')
@@ -19,65 +26,121 @@ def numLines(f):
 
 	return x 
 
+def getDoc(out, pyf, comment, head):
+
+	docs = [] # store doc strings 
+
+	# get doc string 
+	for i in range(len(pyf)):
+
+		f = open(pyf[i], 'r')
+
+		string = '' # store doc string 
+
+		for line in f: 
+
+			if line.startswith(comment) and line.strip().endswith(comment):
+
+				string = line.strip().strip(comment)[1:] + '\n'
+
+			elif line.startswith(comment) and not(line.strip().endswith(comment)):
+
+				string = line + '\n'
+
+				line = next(f)
+
+				while comment not in line:
+
+					spl = re.split(r'(\t*)', line)
+
+					tab = spl[1] 
+
+					if (len(tab) > 1):
+
+						tab = tab[1:-1] + '* ' 
+
+						string += tab + spl[2] + '\n'
+
+					else:
+
+						string += line.strip('\t') + '\n'
+
+					line = next(f)
+
+				string = string[4:]
+
+		# print(pyf[i])
+		# print(string)
+
+		f.close()
+
+		out.write(head + pyf[i] + '\n' + string + '\n')
+
+if (os.path.isfile('README.md')):
+
+	f = open('README.md', 'r')
+
+	line = next(f)
+
+	name = line.strip('# ') 
+	print(name)
+
+	desc = '' 
+
+	line = next(f)
+	while not(line.startswith('\n')):
+
+		desc += line 
+
+		line = next(f)
+
+	print(desc)
+
+	f.close()
+
 files = os.listdir('.') # get current directory files 
 
 pyf = [] # store python file names 
 
+dr = [] # store names of directories 
+
+# check if python file or directory 
 for i in range(len(files)):
 
 	if files[i].endswith('.py'):
 
 		pyf.append(files[i])
 
+	elif os.path.isdir(files[i]):
+
+		dr.append(files[i])
+
 # pyf = sorted(pyf, key=lambda v: v.upper()) # ignore case 
 pyf = sorted(pyf, key=lambda f: numLines(f), reverse=True) # sort by length of file 
 
 print(pyf)
 
-docs = [] # store doc strings 
+comment = '\'\'\''
 
 out = open('README.md', 'w')
 
-comment = '\'\'\''
+out.write('# ' + name + '\n' + desc + '\n\n')
 
-# get doc string 
-for i in range(len(pyf)):
+for i in range(len(dr)):
 
-	f = open(pyf[i], 'r')
+	if (os.path.isfile(dr[i] + '/README.md')):
 
-	string = '' # store doc string 
+		f = open(dr[i] + '/README.md', 'r')
 
-	for line in f: 
+		name = next(f)
+		desc = next(f)
 
-		if line.startswith(comment) and line.strip().endswith(comment):
+		out.write('## ' + dr[i] + '/\n' + desc + '\n')
 
-			string = line.strip().strip(comment)[1:]
+		f.close()
 
-		elif line.startswith(comment) and not(line.strip().endswith(comment)):
+head = '## ' 
 
-			string = line + '\n'
-
-			line = next(f)
-
-			while comment not in line:
-
-				string += line.strip('\t') + '\n'
-
-				line = next(f)
-
-			string = string[4:].strip()
-
-	# string = string.strip()[4:-4] 
-	print(pyf[i])
-	print(string)
-
-	f.close()
-
-	out.write('### ' + pyf[i] + '\n' + string + '\n')
+getDoc(out, pyf, comment, head)
 
 out.close()
-
-
-
-
-			
