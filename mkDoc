@@ -76,13 +76,14 @@ def getDoc(out, pyf, comment, head):
 
 		out.write(head + pyf[i] + '\n' + string + '\n')
 
+# get name and desc from current README.md if available
 if (os.path.isfile('README.md')):
 
 	f = open('README.md', 'r')
 
 	line = next(f)
 
-	name = line.strip('# ') 
+	name = line.strip('# ').strip()
 	print(name)
 
 	desc = '' 
