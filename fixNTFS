@@ -1,4 +1,6 @@
 #!/bin/bash
 
+# changes all files to 640 and all directories to 750 
+
 find $1 -type d -exec chmod 750 {} +
 find $1 -type f -exec chmod 640 {} +

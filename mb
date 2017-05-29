@@ -4,6 +4,8 @@ import os
 import sys
 import argparse
 
+''' makes a bash script with shebang at the top ''' 
+
 parser = argparse.ArgumentParser(description='make bash utility')
 parser.add_argument('name', help='name of bash script')
 

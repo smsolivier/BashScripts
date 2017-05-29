@@ -4,6 +4,11 @@ import os
 import sys
 import argparse
 
+''' Scans documents using an attached printer 
+    Auto merges multiple files 
+    converts to PDF 
+''' 
+
 parser = argparse.ArgumentParser(description='scan to one pdf')
 parser.add_argument('name', default='merged', nargs='?',type=str, help='Name of output PDF file')
 

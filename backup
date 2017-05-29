@@ -1,5 +1,11 @@
 #!/bin/bash
 
+###
+#	bash script to backup files to local server 
+#	uses rsync to prevent rewriting existing files (only updates files that were update/new)
+#	creates a log of when backup occurred on the server 
+### 
+
 # backup music
 echo Music 
 rsync --ignore-existing --size-only --progress --chmod=D750,F640 --perms --rsh=ssh -rz /mnt/Storage/Music/Music/* sam@helium:~/Music

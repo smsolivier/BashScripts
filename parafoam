@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 
 import os 
 
+''' creates a para.foam file and open paraView ''' 
+
 name = 'para.foam' # name of temporary file 
 
 # check if para.Foam exists 

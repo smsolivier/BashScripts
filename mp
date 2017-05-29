@@ -4,6 +4,11 @@ import os
 import sys
 import argparse
 
+''' Makes a generic python file with shebang 
+    Auto imports numpy and matplotlib 
+    support for add imports from command line 
+''' 
+
 parser = argparse.ArgumentParser(description='make python executable utility')
 parser.add_argument('name', help='name of python file')
 parser.add_argument('-s', '--subl', action='store_true', help='open with Sublime Text 3')

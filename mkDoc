@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-''' extract docstrings and make a README markdon ''' 
+''' Extract first comment in ''' ''' and generate a markdown '''  
 
 import os 
 import sys 
