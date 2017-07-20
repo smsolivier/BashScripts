@@ -1,0 +1,198 @@
+#!/usr/bin/env python3
+
+import numpy as np
+import subprocess 
+import os 
+import sys 
+
+def sortkey(lst):
+
+	conv = [3600, 60, 1]
+
+	time = lst.split()[5].split(':')
+
+	sum = 0 
+
+	for i in range(len(time)):
+
+		sum += float(time[i]) * conv[i]
+
+	return sum
+
+# get username from command line 
+if (len(sys.argv) == 2):
+
+	username = sys.argv[1] 
+
+# get my username 
+else:
+
+	username = os.getlogin()
+
+# machine name 
+hostname = os.uname()[1] 
+if (hostname.startswith('rztopaz')):
+
+	totalNodes = 744
+
+elif (hostname.startswith('rztrona')):
+
+	totalNodes = 15
+
+# colored output 
+N  = '\033[0m' # normal 
+R  = '\033[31m' # red 
+G = '\033[32m' # green 
+
+# run squeue 
+jobs = subprocess.run(['squeue'], stdout=subprocess.PIPE).stdout.decode('utf-8').split('\n')
+
+running = [] 
+eligible = [] 
+blocked = [] 
+
+# sort jobs 
+for i in range(1, len(jobs)-1):
+
+	myjob = jobs[i] 
+
+	split = myjob.split() 
+
+	if ('pdebug' not in myjob):
+
+		if (split[4] == 'R'):
+
+			running.append(myjob)
+
+		elif (split[4] == 'PD'):
+
+			if ('(Priority)' in split[7]):
+
+				eligible.append(myjob)
+
+			else:
+
+				blocked.append(myjob)
+
+Nel = len(eligible)
+Nru = len(running)
+Nbl = len(blocked)
+
+iname = 2
+iuser = 3
+inode = 6
+itime = 5
+
+node_r = 0 
+node_e = 0
+node_b = 0
+
+user_r = 0 
+user_e = 0 
+user_b = 0
+
+unode_r = 0 
+unode_e = 0
+unode_b = 0
+
+running = sorted(running, key=sortkey, reverse=True)
+
+print()
+print('   ------------ Running -------------     ------- Eligible -------     -------- Blocked -------')
+for i in range(max(Nel, Nru)):
+
+	rstr = '                        ' 
+	estr = '                        ' 
+	bstr = '                        '
+
+	# running column
+	if (i < Nru):
+
+		rsplit = running[i].split() 
+
+		rstr = '' 
+
+		if (username in running[i]):
+
+			rstr += R
+			user_r += 1
+			unode_r += int(rsplit[inode])
+
+		rstr += '{: <10}{: <10}{: <10}{: >4}'.format(
+			rsplit[iuser], 
+			rsplit[iname],
+			rsplit[itime],
+			rsplit[inode]
+			)
+
+		if (username in running[i]):
+
+			rstr += N
+
+		node_r += int(rsplit[inode])
+
+	# eligible column 
+	if (i < Nel):
+
+		esplit = eligible[i].split()
+
+		estr = '' 
+
+		if (username in eligible[i]):
+
+			estr += R
+			user_e += 1
+			unode_e += int(esplit[inode])
+
+		estr += '{: <10}{: <10}{: >4}'.format(
+			esplit[iuser], 
+			esplit[iname],
+			esplit[inode]
+			)
+
+		if (username in eligible[i]):
+
+			estr += N
+
+		node_e += int(esplit[inode])
+
+	# blocked column 
+	if (i < Nbl):
+
+		bsplit = blocked[i].split()
+
+		bstr = '' 
+
+		if (username in blocked[i]):
+
+			bstr += R
+			user_b += 1
+			unode_b += int(bsplit[inode])
+
+		bstr += '{: <10}{: <10}{: >4}'.format(
+			bsplit[iuser], 
+			bsplit[iname],
+			bsplit[inode]
+			)
+
+		if (username in blocked[i]):
+
+			bstr += N
+
+		node_b += int(bsplit[inode])
+
+	print('   ' + rstr + '     ' + estr + '     ' + bstr)
+
+print()
+print('total usage:')
+print('{: <3} jobs, {: <3} nodes running'.format(Nru, node_r))
+print('{: <3} jobs, {: <3} nodes eligible'.format(Nel, node_e))
+print('{: <3} jobs, {: <3} nodes blocked'.format(Nbl, node_b))
+print('{:.2%} full'.format(node_r/totalNodes))
+
+print()
+print(username, 'usage:')
+print('{: <3} jobs, {: <3} nodes running'.format(user_r, unode_r))
+print('{: <3} jobs, {: <3} nodes eligible'.format(user_e, unode_e))
+print('{: <3} jobs, {: <3} nodes blocked'.format(user_b, unode_b))
+print('{:.2%} usage'.format(unode_r/totalNodes))

@@ -1,0 +1,195 @@
+#!/usr/bin/env python3
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+import argparse 
+import os 
+import sys 
+import re 
+
+from hidespines import * 
+
+''' plots 2 column data across files with a given prefix ''' 
+
+parser = argparse.ArgumentParser(description='plot 2 column data across '
+	+ 'files with a specified prefix')
+parser.add_argument('prefix', nargs='?', help='prefix of files to plot')
+parser.add_argument('-o', '--outputName', default=None, help='output plot name')
+parser.add_argument('-x', '--xlim', nargs=2, help='specify x limits of plot')
+parser.add_argument('-y', '--ylim', nargs=2, help='specify y limits of plot')
+parser.add_argument('--tol', help='plot nuclides with mass fraction above tol')
+parser.add_argument('--title', help='add a title to the plot')
+parser.add_argument('--label', nargs=2, help='add x and y labels to plot')
+parser.add_argument('-f', '--files', nargs='+', help='list individual files to plot')
+parser.add_argument('--iso', action='store_true', help='remove prefix and format as isotope')
+parser.add_argument('--iso7', action='store_true', help='plot NetNuc7 suffixes')
+parser.add_argument('-a', '--add', nargs='+', help='add prefixes to plot')
+parser.add_argument('--vline', nargs='+', help='plot a vertical line')
+parser.add_argument('--hline', nargs='+', help='plot a horizontal line')
+parser.add_argument('--abs', action='store_true', help='plot absolute value of y column')
+parser.add_argument('--bbn', action='store_true', help='plot BBN isotopes only')
+parser.add_argument('--noframe', action='store_false', help='turn off legend frame')
+parser.add_argument('--skip', default=0, type=int, help='how many lines to skip in files')
+parser.add_argument('--nohide', action='store_true', help='don\'t hide top and right spines')
+
+args = parser.parse_args() # get cmd line arguments 
+
+prefix = [args.prefix]
+if (args.add != None):
+
+	prefix += args.add
+
+files = [] # store files with matching prefix 
+
+# read in iso7 network names only 
+if (args.iso7):
+
+	args.files = ['he4', 'c12', 'o16', 'ne20', 'mg24', 'si28', 'ni56']
+
+	# add prefix 
+	for j in range(len(prefix)):
+
+		for i in range(len(args.files)):
+
+			files.append(prefix[j] + args.files[i])
+
+if (args.bbn):
+
+	args.files = ['h1', 'n1', 'h2', 'h3', 'he3', 'he4', 'li7', 'be7']
+
+	# add prefix 
+	for j in range(len(prefix)):
+
+		for i in range(len(args.files)):
+
+			files.append(prefix[j] + args.files[i])
+
+elif (args.files != None):
+
+	for i in range(len(args.files)):
+
+		if (os.path.isfile(args.files[i])):
+
+			files.append(args.files[i])
+
+else:
+
+	# find files with prefix 
+	for j in range(len(prefix)):
+
+		if ('/' in prefix[j]):
+			
+			drname = prefix[j].split('/')[0] + '/'
+			prefname = prefix[j].split('/')[1]
+
+		else:
+
+			drname = './'
+			prefname = prefix[j]
+
+		allfiles = os.listdir(drname)
+
+		for i in range(len(allfiles)):
+
+			if (allfiles[i].startswith(prefname)):
+
+				if (drname == './'):
+
+					files.append(allfiles[i])
+
+				else:
+
+					files.append(drname + allfiles[i])
+
+# convert to latex
+label = [] 
+
+if (args.iso7 or args.iso or args.bbn):
+
+		for i in range(len(files)):
+
+			suff = files[i][len(args.prefix):]
+
+			parts = re.split('(\d.*)', suff) 
+
+			nuc = parts[0] 
+			A = parts[1]
+
+			if not((nuc == 'n' and A == '1') or (nuc == 'p' and A == '1')):
+
+				nuc = nuc.title()
+
+			else:
+
+				A = ''
+
+			string = '${}^{' + A + '}$' + nuc
+
+			label.append(string) 
+
+else:
+
+	for i in range(len(files)):
+
+		label.append(files[i])
+
+# plot files with prefix 
+for i in range(len(files)):
+
+	x, y = np.loadtxt(files[i], unpack=True, skiprows=args.skip)
+
+	if (args.abs):
+
+		y = np.fabs(y)
+
+	# plot if y > tol or if no tolerance is set 
+	if (args.tol != None and np.max(y) > float(args.tol)) or args.tol == None:
+
+		plt.loglog(x, y, label=label[i].replace('_', '\_'))
+
+if (args.vline != None):
+
+	for i in range(len(args.vline)):
+
+		plt.axvline(float(args.vline[i]), color='k', alpha=.3)
+
+if (args.hline != None):
+
+	for i in range(len(args.hline)):
+
+		plt.axhline(float(args.hline[i]), color='k', alpha=.3)
+
+if (len(files) == 0):
+
+	print('--- no matching files found ---')
+	sys.exit()
+
+if (len(files) > 1):
+	plt.legend(loc='best', frameon=args.noframe)
+
+# set xlimits 
+if (args.xlim != None):
+	plt.xlim(10**float(args.xlim[0]), 10**float(args.xlim[1]))
+
+# set y limits 
+if (args.ylim != None):
+	plt.ylim(10**float(args.ylim[0]), 10**float(args.ylim[1]))
+
+# add title 
+if (args.title != None):
+	plt.title(args.title.replace('_', '\_'))
+
+# add labels 
+if (args.label != None):
+	plt.xlabel(args.label[0])
+	plt.ylabel(args.label[1])
+
+if not(args.nohide):
+	
+	hidespines(plt.gca())
+
+if (args.outputName != None):
+	plt.savefig(args.outputName)
+else:
+	plt.show()

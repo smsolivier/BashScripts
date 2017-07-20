@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+pdfjam --nup 2x1 --landscape $1 $2 -o $3

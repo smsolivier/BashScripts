@@ -1,0 +1,75 @@
+#!/usr/bin/env python3
+
+import subprocess
+import os 
+
+username = os.getlogin() # get username 
+
+# colored output 
+N  = '\033[0m' # normal 
+C  = '\033[31m' # red 
+# C = '\033[32m' # green 
+
+hostname = os.uname()[1] 
+
+if (hostname.startswith('rztopaz')):
+
+	total = 12
+
+elif (hostname.startswith('rztrona')):
+
+	total = 2
+
+else:
+
+	print('number of debug nodes not defined for', hostname)
+
+queue = subprocess.run(['squeue'], stdout=subprocess.PIPE).stdout.decode('utf-8').split('\n')
+
+nodes = 0 # store number of nodes in use 
+visit = 0 # number of visit sessions 
+mxterm = 0 # number of mxterms 
+mynodes = 0 # store number of nodes for me 
+waiting = 0 # store number of eligible jobs 
+for i in range(len(queue)):
+
+	# get debug lines 
+	if ('pdebug' in queue[i]):
+
+		split = queue[i].split()
+
+		if (split[4] == 'R'):
+
+			# sum up nodes in use 
+			nodes += int(split[-2])
+
+			# check for visit 
+			if ('engine_p' in queue[i]):
+
+				visit += 1
+
+			# check for mxterms
+			if ('mxterm' in queue[i]):
+
+				mxterm += 1
+
+		elif (split[4] == 'PD'):
+
+			waiting += 1
+
+		if (username in queue[i]):
+
+			mynodes += int(queue[i].split()[-2])
+
+			print(C + queue[i] + N)
+
+		else:
+
+			print(queue[i])
+
+print(total - nodes, 'nodes open')
+print('{:.2f}% full'.format(nodes/total*100))
+print(waiting, 'jobs waiting')
+print(mynodes, 'in use by me')
+print(visit, 'nodes running visit')
+print(mxterm, 'nodes running mxterm')
