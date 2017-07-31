@@ -7,15 +7,28 @@ import sys
 
 def sortkey(lst):
 
-	conv = [3600, 60, 1]
+	# conv = [3600, 60, 1]
+	conv = [1, 60, 3600]
 
-	time = lst.split()[5].split(':')
+	time = lst.split()[5]
+
+	day = 0
+	if ('-' in time):
+
+		day = float(time.split('-')[0])
+
+		time = time.split('-')[1]
+
+	time = time.split(':')
+	time = time[::-1]
 
 	sum = 0 
 
 	for i in range(len(time)):
 
 		sum += float(time[i]) * conv[i]
+
+	sum += float(day)*24*3600
 
 	return sum
 
@@ -33,11 +46,21 @@ else:
 hostname = os.uname()[1] 
 if (hostname.startswith('rztopaz')):
 
-	totalNodes = 744
+	# totalNodes = 744
+	totalNodes = 534
 
 elif (hostname.startswith('rztrona')):
 
 	totalNodes = 15
+
+elif (hostname.startswith('quartz')):
+
+	totalNodes = 2604
+
+else:
+
+	print('total nodes not defined for ' + hostname)
+	sys.exit()
 
 # colored output 
 N  = '\033[0m' # normal 
@@ -95,13 +118,14 @@ unode_r = 0
 unode_e = 0
 unode_b = 0
 
+# sort running jobs by time (longest running first)
 running = sorted(running, key=sortkey, reverse=True)
 
 print()
 print('   ------------ Running -------------     ------- Eligible -------     -------- Blocked -------')
-for i in range(max(Nel, Nru)):
+for i in range(max(Nel, Nru, Nbl)):
 
-	rstr = '                        ' 
+	rstr = '                                  ' 
 	estr = '                        ' 
 	bstr = '                        '
 
@@ -118,7 +142,7 @@ for i in range(max(Nel, Nru)):
 			user_r += 1
 			unode_r += int(rsplit[inode])
 
-		rstr += '{: <10}{: <10}{: <10}{: >4}'.format(
+		rstr += '{: <10}{: ^10}{: ^10}{: >4}'.format(
 			rsplit[iuser], 
 			rsplit[iname],
 			rsplit[itime],
@@ -144,7 +168,7 @@ for i in range(max(Nel, Nru)):
 			user_e += 1
 			unode_e += int(esplit[inode])
 
-		estr += '{: <10}{: <10}{: >4}'.format(
+		estr += '{: <10}{: ^10}{: >4}'.format(
 			esplit[iuser], 
 			esplit[iname],
 			esplit[inode]
@@ -169,7 +193,7 @@ for i in range(max(Nel, Nru)):
 			user_b += 1
 			unode_b += int(bsplit[inode])
 
-		bstr += '{: <10}{: <10}{: >4}'.format(
+		bstr += '{: <10}{: ^10}{: >4}'.format(
 			bsplit[iuser], 
 			bsplit[iname],
 			bsplit[inode]

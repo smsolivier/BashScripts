@@ -24,6 +24,7 @@ parser.add_argument('--label', nargs=2, help='add x and y labels to plot')
 parser.add_argument('-f', '--files', nargs='+', help='list individual files to plot')
 parser.add_argument('--iso', action='store_true', help='remove prefix and format as isotope')
 parser.add_argument('--iso7', action='store_true', help='plot NetNuc7 suffixes')
+parser.add_argument('--isoMore', action='store_true', help='plot more than NetNuc7 suffices')
 parser.add_argument('-a', '--add', nargs='+', help='add prefixes to plot')
 parser.add_argument('--vline', nargs='+', help='plot a vertical line')
 parser.add_argument('--hline', nargs='+', help='plot a horizontal line')
@@ -46,6 +47,17 @@ files = [] # store files with matching prefix
 if (args.iso7):
 
 	args.files = ['he4', 'c12', 'o16', 'ne20', 'mg24', 'si28', 'ni56']
+
+	# add prefix 
+	for j in range(len(prefix)):
+
+		for i in range(len(args.files)):
+
+			files.append(prefix[j] + args.files[i])
+
+if (args.isoMore):
+
+	args.files = ['he4', 'c12', 'o16', 'ne20', 'mg24', 'si28', 'co55', 'ni56']
 
 	# add prefix 
 	for j in range(len(prefix)):
