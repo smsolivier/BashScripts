@@ -20,6 +20,10 @@ elif (hostname.startswith('rztrona')):
 
 	total = 2
 
+elif (hostname.startswith('quartz')):
+
+	total = 16
+
 else:
 
 	print('number of debug nodes not defined for', hostname)
