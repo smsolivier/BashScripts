@@ -1,20 +1,30 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-3.5.1
 
 import subprocess
 import os 
 
-username = os.getlogin() # get username 
+import sys 
+
+# get username from cmd line if available 
+if (len(sys.argv) == 2):
+
+	username = sys.argv[1]
+
+else:
+
+	username = os.getlogin() # get username 
 
 # colored output 
 N  = '\033[0m' # normal 
 C  = '\033[31m' # red 
-# C = '\033[32m' # green 
+G = '\033[32m' # green 
+Y = '\033[33m' # yellow
 
 hostname = os.uname()[1] 
 
 if (hostname.startswith('rztopaz')):
 
-	total = 12
+	total = 16
 
 elif (hostname.startswith('rztrona')):
 
@@ -23,6 +33,10 @@ elif (hostname.startswith('rztrona')):
 elif (hostname.startswith('quartz')):
 
 	total = 16
+
+elif (hostname.startswith('rzhasgpu')):
+
+	total = 2
 
 else:
 
@@ -61,19 +75,29 @@ for i in range(len(queue)):
 
 			waiting += 1
 
+		# string = '{: <10}{: ^10}{: ^10}{: >4}'.format(
+			# split[3], split[2], split[5], split[6])
+		string = queue[i]
+
 		if (username in queue[i]):
 
 			mynodes += int(queue[i].split()[-2])
 
-			print(C + queue[i] + N)
+			print(C + string + N)
 
 		else:
 
-			print(queue[i])
+			print(string)
 
-print(total - nodes, 'nodes open')
-print('{:.2f}% full'.format(nodes/total*100))
-print(waiting, 'jobs waiting')
-print(mynodes, 'in use by me')
-print(visit, 'nodes running visit')
-print(mxterm, 'nodes running mxterm')
+print()
+print('total usage:')
+print('{} nodes running'.format(nodes))
+print('{} nodes waiting'.format(waiting))
+print('{} nodes running visit'.format(visit))
+print('{} nodes running mxterm'.format(mxterm))
+print('{:.2%} full'.format(nodes/total))
+
+print()
+print(username, 'usage:')
+print('{} nodes running'.format(mynodes))
+print('{:.2%} usage'.format(mynodes/total))

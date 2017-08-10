@@ -33,6 +33,8 @@ parser.add_argument('--bbn', action='store_true', help='plot BBN isotopes only')
 parser.add_argument('--noframe', action='store_false', help='turn off legend frame')
 parser.add_argument('--skip', default=0, type=int, help='how many lines to skip in files')
 parser.add_argument('--nohide', action='store_true', help='don\'t hide top and right spines')
+parser.add_argument('--fsize', help='set font size of axis labels')
+parser.add_argument('--transparent', action='store_true', help='save plot with transparent background')
 
 args = parser.parse_args() # get cmd line arguments 
 
@@ -146,6 +148,8 @@ else:
 
 		label.append(files[i])
 
+colors = ['#005ea3', 'g', 'r', 'c', 'm', 'y', 'k']
+
 # plot files with prefix 
 for i in range(len(files)):
 
@@ -158,7 +162,7 @@ for i in range(len(files)):
 	# plot if y > tol or if no tolerance is set 
 	if (args.tol != None and np.max(y) > float(args.tol)) or args.tol == None:
 
-		plt.loglog(x, y, label=label[i].replace('_', '\_'))
+		plt.loglog(x, y, label=label[i].replace('_', '\_'), color=colors[i])
 
 if (args.vline != None):
 
@@ -194,14 +198,19 @@ if (args.title != None):
 
 # add labels 
 if (args.label != None):
-	plt.xlabel(args.label[0])
-	plt.ylabel(args.label[1])
+
+	if (args.fsize != None):
+		plt.xlabel(args.label[0], fontsize=args.fsize)
+		plt.ylabel(args.label[1], fontsize=args.fsize)
+	else:
+		plt.xlabel(args.label[0])
+		plt.ylabel(args.label[1])
 
 if not(args.nohide):
 	
 	hidespines(plt.gca())
 
 if (args.outputName != None):
-	plt.savefig(args.outputName)
+	plt.savefig(args.outputName, transparent=args.transparent)
 else:
 	plt.show()
