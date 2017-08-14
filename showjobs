@@ -60,6 +60,10 @@ elif (hostname.startswith('rzhasgpu')):
 
 	totalNodes = 14
 
+elif (hostname.startswith('cab')):
+
+	totalNodes = 1296
+
 else:
 
 	print('total nodes not defined for ' + hostname)
