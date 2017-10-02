@@ -96,7 +96,7 @@ f.close()
 
 # open with sublime 
 if (sublime):
-    os.system('/usr/global/tools/sublime_text_3/sublime_text %s' % (name))
+    os.system('subl %s' % (name))
 
 # open with emacs 
 if (emacs):
