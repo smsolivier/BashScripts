@@ -1,0 +1,38 @@
+#!/usr/bin/env python3
+
+import os 
+import sys 
+import argparse 
+
+parser = argparse.ArgumentParser(description='make a latex subfile')
+parser.add_argument('name', help='name of latex file')
+parser.add_argument('-s', '--subl', action='store_true', help='open with ST3')
+parser.add_argument('main_file', help='name of main document')
+parser.add_argument('-p', '--problem', action='store_true', help='add problem environment')
+
+args = parser.parse_args()
+name = args.name + '.tex'
+
+# create file if it doesn't exist already 
+if (os.path.isfile(name)):
+
+	print('File exists')
+	sys.exit()
+
+else:
+
+	f = open(name, 'w')
+
+# add shebang 
+f.write('%!TEX root = ' + args.main_file + '\n\n')
+
+if (args.problem):
+
+	f.write('\\begin{problem}\n\n\n\n\\end{problem}')
+
+f.close()
+
+if (args.subl):
+
+	os.system('subl ' + name)
+
