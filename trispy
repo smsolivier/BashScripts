@@ -5,9 +5,15 @@ import matplotlib.pyplot as plt
 
 import sys 
 
-if (len(sys.argv)!=2):
+if (len(sys.argv)<2):
 	print('provide a file name')
 	sys.exit() 
+
+test = False 
+if (len(sys.argv)==4):
+	test = True 
+	r = int(sys.argv[2])
+	c = int(sys.argv[3])
 
 f = open(sys.argv[1]) 
 height = 0
@@ -25,14 +31,14 @@ for line in f:
 rows += 1
 p, row, col, val = np.loadtxt(sys.argv[1], skiprows=rows, unpack=True) 
 
-print(p)
-print(row)
-print(col)
-print(val) 
+print('height = {}, width = {}'.format(height, width)) 
 
 A = np.zeros((height, width))
 for i in range(len(p)):
 	A[int(row[i]), int(col[i])] = val[i] 
+
+if (test):
+	print('({},{}) = {}'.format(r,c,A[r,c])) 
 
 plt.spy(A)
 plt.show()
