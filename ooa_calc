@@ -1,0 +1,11 @@
+#!/usr/bin/env python3
+
+import numpy as np
+import sys 
+
+if (len(sys.argv)!=3):
+	raise RuntimeError('must provide E1 and E2') 
+
+E1 = float(sys.argv[1])
+E2 = float(sys.argv[2]) 
+print('order = {:.3f}'.format(np.log2(E1/E2)))
