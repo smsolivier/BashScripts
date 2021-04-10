@@ -10,7 +10,16 @@ import re
 
 from hidespines import * 
 
-''' plots 2 column data across files with a given prefix ''' 
+''' plots 2 column data across files with a given prefix 
+	Example usage for cosmos main-burn output:
+		colplot burnx.nuc_ 
+			plots all files with the prefix burnx.nuc_ 
+		colplot burnx.nuc_ --iso7 
+			plots only the iso7 files 
+	For general plotting:
+		colplot -f file1 file2 
+			plots file1 and file2 where file1 and file2 are files with x and y columns 
+''' 
 
 parser = argparse.ArgumentParser(description='plot 2 column data across '
 	+ 'files with a specified prefix')
@@ -148,8 +157,6 @@ else:
 
 		label.append(files[i])
 
-colors = ['#005ea3', 'g', 'r', 'c', 'm', 'y', 'k']
-
 # plot files with prefix 
 for i in range(len(files)):
 
@@ -162,7 +169,7 @@ for i in range(len(files)):
 	# plot if y > tol or if no tolerance is set 
 	if (args.tol != None and np.max(y) > float(args.tol)) or args.tol == None:
 
-		plt.loglog(x, y, label=label[i].replace('_', '\_'), color=colors[i])
+		plt.loglog(x, y, label=label[i].replace('_', '\_'))
 
 if (args.vline != None):
 

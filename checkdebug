@@ -38,6 +38,10 @@ elif (hostname.startswith('rzhasgpu')):
 
 	total = 2
 
+elif (hostname.startswith('rzgenie')):
+
+	total = 43 
+
 else:
 
 	print('number of debug nodes not defined for', hostname)

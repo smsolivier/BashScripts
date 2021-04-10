@@ -64,12 +64,15 @@ elif (hostname.startswith('cab')):
 
 	totalNodes = 1296
 
+
 elif (hostname.startswith('sn')):
 
 	totalNodes = 184*2
+elif (hostname.startswith('rzgenie')):
+
+	totalNodes = 43
 
 else:
-
 	print('total nodes not defined for ' + hostname)
 	sys.exit()
 
