@@ -46,7 +46,7 @@ else:
 hostname = os.uname()[1] 
 if (hostname.startswith('rztopaz')):
 
-	totalNodes = 744
+	totalNodes = 728
 
 elif (hostname.startswith('rztrona')):
 
@@ -135,8 +135,8 @@ unode_b = 0
 # sort running jobs by time (longest running first)
 running = sorted(running, key=sortkey, reverse=True)
 
-print()
-print('   ------------ Running -------------     ------- Eligible -------     -------- Blocked -------')
+#print()
+#print('   ------------ Running -------------     ------- Eligible -------     -------- Blocked -------')
 for i in range(max(Nel, Nru, Nbl)):
 
 	rstr = '                                  ' 
@@ -219,9 +219,9 @@ for i in range(max(Nel, Nru, Nbl)):
 
 		node_b += int(bsplit[inode])
 
-	print('   ' + rstr + '     ' + estr + '     ' + bstr)
+	#print('   ' + rstr + '     ' + estr + '     ' + bstr)
 
-print()
+#print()
 print('total usage:')
 print('{: <4} jobs, {: <4} nodes running'.format(Nru, node_r))
 print('{: <4} jobs, {: <4} nodes eligible'.format(Nel, node_e))
